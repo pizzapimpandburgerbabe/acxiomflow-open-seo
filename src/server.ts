@@ -30,13 +30,15 @@ import { GDPR_STORAGE_ERASURE_PATH } from "@/shared/gdpr-erasure";
 
 const startHandler = createStartHandler(defaultStreamHandler);
 
-// The app ships no security response headers of its own, so any third-party
-// page can frame an app route and UI-redress a one-click action (delete a
-// project, change project settings, buy credits). `frame-ancestors 'self'` on
-// the app's own documents is the whole fix, and deliberately all of it: a
-// script-src policy would need a nonce for the inline bootstrap script in
-// __root.tsx plus allowances for Turnstile and PostHog, which is separate,
-// larger work.
+// Block arbitrary third-party framing while allowing the two trusted
+// AcxiomFlow Sales hosts that present OpenSEO inside the authenticated SEO
+// workspace. Keep this allowlist narrow: OpenSEO includes destructive actions
+// such as deleting projects and changing project settings.
+const FRAME_ANCESTORS = [
+  "'self'",
+  "https://sales.acxiomflow.com",
+  "https://ai-sniper-git-codex-integrate-openseo-module-pizzapims-projects.vercel.app",
+].join(" ");
 //
 // Only HTML documents, and only ones that carry no policy of their own, so a
 // route that sets its own stricter CSP keeps it (two CSP headers intersect, so
@@ -53,7 +55,10 @@ async function appFetch(request: Request): Promise<Response> {
     return response;
   }
   const headers = new Headers(response.headers);
-  headers.set("Content-Security-Policy", "frame-ancestors 'self'");
+  headers.set(
+    "Content-Security-Policy",
+    `frame-ancestors ${FRAME_ANCESTORS}`,
+  );
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
