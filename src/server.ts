@@ -30,13 +30,14 @@ import { GDPR_STORAGE_ERASURE_PATH } from "@/shared/gdpr-erasure";
 
 const startHandler = createStartHandler(defaultStreamHandler);
 
-// Block arbitrary third-party framing while allowing the two trusted
+// Block arbitrary third-party framing while allowing the trusted
 // AcxiomFlow Sales hosts that present OpenSEO inside the authenticated SEO
 // workspace. Keep this allowlist narrow: OpenSEO includes destructive actions
 // such as deleting projects and changing project settings.
 const FRAME_ANCESTORS = [
   "'self'",
   "https://sales.acxiomflow.com",
+  "https://staging.acxiomflow.com",
   "https://ai-sniper-git-codex-integrate-openseo-module-pizzapims-projects.vercel.app",
 ].join(" ");
 //
