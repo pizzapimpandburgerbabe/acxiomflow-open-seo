@@ -56,10 +56,7 @@ async function appFetch(request: Request): Promise<Response> {
     return response;
   }
   const headers = new Headers(response.headers);
-  headers.set(
-    "Content-Security-Policy",
-    `frame-ancestors ${FRAME_ANCESTORS}`,
-  );
+  headers.set("Content-Security-Policy", `frame-ancestors ${FRAME_ANCESTORS}`);
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
